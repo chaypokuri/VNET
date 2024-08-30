@@ -55,7 +55,7 @@ resource "azurerm_windows_web_app" "example" {
   resource_group_name = azurerm_resource_group.example.name
   location            = azurerm_service_plan.example.location
   service_plan_id     = azurerm_service_plan.example.id
-  virtual_network_subnet_id = azurerm_subnet.example.id
+  #virtual_network_subnet_id = azurerm_subnet.example.id
 
   site_config {}
 }
