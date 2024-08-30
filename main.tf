@@ -20,17 +20,6 @@ resource "azurerm_resource_group" "example" {
   location = "West Europe"
 }
  
-resource "azurerm_app_service_plan" "example" {
-  name                = "example-appserviceplan"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
- 
-  sku {
-    tier = "Standard"
-    size = "S1"
-  }
-}
- 
 resource "azurerm_virtual_network" "example" {
   name                = "example-virtual-network"
   address_space       = ["10.0.0.0/24"]
@@ -53,24 +42,20 @@ resource "azurerm_subnet" "example" {
     }
   }
 }
- 
-resource "azurerm_app_service" "example" {
-  name                = "example-app-service"
-  location            = azurerm_resource_group.example.location
+resource "azurerm_service_plan" "example" {
+  name                = "example"
   resource_group_name = azurerm_resource_group.example.name
-  app_service_plan_id = azurerm_app_service_plan.example.id
- 
-  site_config {
-    vnet_route_all_enabled = true  # Ensures VNet integration is enabled
-  }
- 
-  identity {
-    type = "SystemAssigned"
-  }
-}
- 
-resource "azurerm_app_service_virtual_network_swift_connection" "example" {
-  app_service_id = azurerm_app_service.example.id
-  subnet_id      = azurerm_subnet.example.id
+  location            = azurerm_resource_group.example.location
+  sku_name            = "P1v2"
+  os_type             = "Windows"
 }
 
+resource "azurerm_windows_web_app" "example" {
+  name                = "example"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_service_plan.example.location
+  service_plan_id     = azurerm_service_plan.example.id
+  virtual_network_subnet_id = azurerm_subnet.example.id
+
+  site_config {}
+}
